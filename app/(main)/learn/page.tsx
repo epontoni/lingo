@@ -3,12 +3,13 @@ import FeedWrapper from "@/components/FeedWrapper";
 import StickyWrapper from "@/components/StickyWrapper";
 import Header from "./_components/Header";
 import UserProgress from "@/components/UserProgress";
-import { getUserProgress } from "@/db/queries";
+import { getUnits, getUserProgress } from "@/db/queries";
 
 export default async function LearnPage() {
   const userProgressData = getUserProgress();
+  const unitsData = getUnits()
 
-  const [userProgress] = await Promise.all([userProgressData]);
+  const [userProgress, units] = await Promise.all([userProgressData, unitsData]);
 
   if (!userProgress || !userProgress.activeCourse) {
     redirect("/courses");
@@ -25,18 +26,13 @@ export default async function LearnPage() {
       </StickyWrapper>
       <FeedWrapper>
         <Header title={userProgress.activeCourse.title} />
-        <div className="space-y-4">
-          <div className="h-[200px] bg-slate-200 w-full">asd</div>
-          <div className="h-[200px] bg-slate-400 w-full">asd</div>
-          <div className="h-[200px] bg-slate-200 w-full">asd</div>
-          <div className="h-[200px] bg-slate-400 w-full">asd</div>
-          <div className="h-[200px] bg-slate-200 w-full">asd</div>
-          <div className="h-[200px] bg-slate-400 w-full">asd</div>
-          <div className="h-[200px] bg-slate-200 w-full">asd</div>
-          <div className="h-[200px] bg-slate-400 w-full">asd</div>
-          <div className="h-[200px] bg-slate-200 w-full">asd</div>
-          <div className="h-[200px] bg-slate-400 w-full">asd</div>
-        </div>
+        {
+          units.map(unit => (
+            <div key={unit.id} className="">
+              {JSON.stringify(unit)}
+            </div>
+          ))
+        }
       </FeedWrapper>
     </div>
   );
