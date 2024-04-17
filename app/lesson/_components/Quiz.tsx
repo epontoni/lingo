@@ -1,11 +1,14 @@
 "use client";
 
 import { challengeOptions, challenges } from "@/db/schema";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Header from "./Header";
 import QuestionBubble from "./QuestionBubble";
 import Challenge from "./Challenge";
 import Footer from "./Footer";
+import { upsertChallengeProgress } from "@/actions/challenge-progress";
+import { toast } from "sonner";
+import { reduceHearts } from "@/actions/user-progress";
 
 type Props = {
   initialLessonId: number;
@@ -25,6 +28,8 @@ export default function Quiz({
   initialPercentage,
   userSubscription,
 }: Props) {
+  const [isPending, startTransition] = useTransition();
+
   const [hearts, setHearts] = useState(initialHearts);
   const [percentage, setPercentage] = useState(initialPercentage);
   const [challenges] = useState(initialLessonChallenges);
@@ -41,10 +46,75 @@ export default function Quiz({
   const challenge = challenges[activeIndex];
   const options = challenge?.challengeOptions ?? [];
 
+  const onNext = () => {
+    setActiveIndex((current) => current + 1);
+  };
+
   const onSelect = (id: number) => {
     if (status !== "none") return;
 
     setSelectedOption(id);
+  };
+
+  const onContinue = () => {
+    if (!selectedOption) return;
+
+    if (status === "wrong") {
+      setStatus("none");
+      setSelectedOption(undefined);
+      return;
+    }
+
+    if (status === "correct") {
+      onNext();
+      setStatus("none");
+      setSelectedOption(undefined);
+      return;
+    }
+
+    const correctOption = options.find((option) => option.correct);
+
+    if (!correctOption) return;
+    if (correctOption.id == selectedOption) {
+      startTransition(() => {
+        upsertChallengeProgress(challenge.id)
+          .then((response) => {
+            if (response?.error === "hearts") {
+              console.log("No hearts left!");
+              return;
+            }
+            setStatus("correct");
+            setPercentage((current) => current + 100 / challenges.length);
+
+            // This is a practice challenge
+            if (initialPercentage === 100) {
+              setHearts((current) => Math.min(current + 1, 5));
+            }
+          })
+          .catch((error) => {
+            toast.error("Something went wrong!");
+          });
+      });
+    } else {
+      startTransition(() => {
+        reduceHearts(challenge.id)
+          .then((response) => {
+            if (response?.error === "hearts") {
+              console.log("No hearts left!");
+              return;
+            }
+            setStatus("wrong");
+
+            if (!response?.error) {
+              setHearts((current) => Math.max(current - 1, 0));
+            }
+          })
+          .catch((error) => {
+            toast.error("Something went wrong!");
+          });
+      });
+      console.log("Incorrect Option!");
+    }
   };
 
   const title =
@@ -73,14 +143,14 @@ export default function Quiz({
                 onSelect={onSelect}
                 status={status}
                 selectedOption={selectedOption}
-                disabled={false}
+                disabled={isPending}
                 type={challenge.type}
               />
             </div>
           </div>
         </div>
       </div>
-      <Footer disabled={!selectedOption} status={status} onCheck={() => {}} />
+      <Footer disabled={!selectedOption} status={status} onCheck={onContinue} />
     </>
   );
 }

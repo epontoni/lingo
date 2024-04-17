@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
+import "react-circular-progressbar/dist/styles.css";
+
 type Props = {
   id: number;
   index: number;
