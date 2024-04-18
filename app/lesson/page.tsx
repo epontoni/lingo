@@ -16,7 +16,7 @@ export default async function LessonPage() {
   }
 
   const initialPercentage =
-    (lesson.challenges.filter((challenge) => challenge.completed).length /
+    (lesson?.challenges.filter((challenge) => challenge.completed).length /
       lesson.challenges.length) *
     100;
 

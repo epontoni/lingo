@@ -65,6 +65,12 @@ const main = async () => {
         title: "Verbs",
         order: 2,
       },
+      {
+        id: 3,
+        unitId: 1,
+        title: "Verbs 2",
+        order: 3,
+      },
     ]);
 
     await db.insert(schema.challenges).values([
@@ -156,6 +162,103 @@ const main = async () => {
       },
       {
         challengeId: 3,
+        imageSrc: "/robot.svg",
+        correct: true,
+        text: "el robot",
+        audioSrc: "/es_robot.mp3",
+      },
+    ]);
+
+    // Challenges and options for lesson 2.
+    await db.insert(schema.challenges).values([
+      {
+        id: 4,
+        lessonId: 2,
+        type: "SELECT",
+        order: 1,
+        question: "Wich one of these is 'The man'?",
+      },
+      {
+        id: 5,
+        lessonId: 2,
+        type: "ASSIST",
+        order: 2,
+        question: "'The man'",
+      },
+      {
+        id: 6,
+        lessonId: 2,
+        type: "SELECT",
+        order: 3,
+        question: "Wich one of these is 'The robot'?",
+      },
+    ]);
+
+    await db.insert(schema.challengeOptions).values([
+      {
+        challengeId: 4,
+        imageSrc: "/man.svg",
+        correct: true,
+        text: "el hombre",
+        audioSrc: "/es_man.mp3",
+      },
+      {
+        challengeId: 4,
+        imageSrc: "/woman.svg",
+        correct: false,
+        text: "la mujer",
+        audioSrc: "/es_woman.mp3",
+      },
+      {
+        challengeId: 4,
+        imageSrc: "/robot.svg",
+        correct: false,
+        text: "el robot",
+        audioSrc: "/es_robot.mp3",
+      },
+    ]);
+
+    await db.insert(schema.challengeOptions).values([
+      {
+        challengeId: 5,
+        //imageSrc: "/man.svg",
+        correct: true,
+        text: "el hombre",
+        audioSrc: "/es_man.mp3",
+      },
+      {
+        challengeId: 5,
+        //imageSrc: "/woman.svg",
+        correct: false,
+        text: "la mujer",
+        audioSrc: "/es_woman.mp3",
+      },
+      {
+        challengeId: 5,
+        //imageSrc: "/robot.svg",
+        correct: false,
+        text: "el robot",
+        audioSrc: "/es_robot.mp3",
+      },
+    ]);
+
+    await db.insert(schema.challengeOptions).values([
+      {
+        challengeId: 6,
+        imageSrc: "/man.svg",
+        correct: false,
+        text: "el hombre",
+        audioSrc: "/es_man.mp3",
+      },
+      {
+        challengeId: 6,
+        imageSrc: "/woman.svg",
+        correct: false,
+        text: "la mujer",
+        audioSrc: "/es_woman.mp3",
+      },
+      {
+        challengeId: 6,
         imageSrc: "/robot.svg",
         correct: true,
         text: "el robot",
