@@ -34,15 +34,17 @@ export default function Footer({ disabled, status, onCheck, lessonId }: Props) {
             Upps! Try again!
           </div>
         )}
-        {status === "completed" && (
-          <Button
-            size={isMobile ? "sm" : "lg"}
-            variant="default"
-            onClick={() => (window.location.href = `/lesson/${lessonId}`)}
-          >
-            Practice again
-          </Button>
-        )}
+        {
+          status === "completed" && (
+            <Button
+              size={isMobile ? "sm" : "lg"}
+              variant="default"
+              onClick={() => (window.location.href = `/lesson/${lessonId}`)}
+            >
+              Practice again
+            </Button>
+          ) /** window.location causes a full page reload but allows the PracticeModal to be seen when loading "lesson/lessonId". TODO: try using another strategy without causing full page load. */
+        }
         <Button
           disabled={disabled}
           className="ml-auto"
