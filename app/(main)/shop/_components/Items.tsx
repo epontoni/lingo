@@ -1,9 +1,10 @@
 "use client";
 
 import { refillHeart } from "@/actions/user-progress";
+import { createStripeUrl } from "@/actions/user-subscription";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { useTransition } from "react";
+import { startTransition, useTransition } from "react";
 import { toast } from "sonner";
 
 // TODO. Move along with the other constants into a common file
@@ -32,6 +33,18 @@ export default function Items({
     });
   };
 
+  const onUpgrade = () => {
+    starTransition(() => {
+      createStripeUrl()
+        .then((response) => {
+          if (response.data) {
+            window.location.href = response.data;
+          }
+        })
+        .catch(() => toast.error("Something went wrong"));
+    });
+  };
+
   return (
     <ul className="w-full">
       <div className="flex items-center w-full p-4 gap-x-4 border-t-2">
@@ -55,6 +68,17 @@ export default function Items({
               </p>
             </div>
           )}
+        </Button>
+      </div>
+      <div className="flex items-center w-full p-4 pt-8 gap-x-4 border-t-2">
+        <Image src="/unlimited.svg" alt="Unlimited" width={60} height={60} />
+        <div className="flex-1">
+          <p className="text-neutral-700 text-base lg:text-xl font-bold">
+            Unlimited hearts
+          </p>
+        </div>
+        <Button onClick={onUpgrade} disabled={pending}>
+          {hasActiveSubscription ? "settings" : "upgrade"}
         </Button>
       </div>
     </ul>

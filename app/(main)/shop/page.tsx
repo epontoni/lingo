@@ -1,27 +1,34 @@
 import FeedWrapper from "@/components/FeedWrapper";
 import StickyWrapper from "@/components/StickyWrapper";
 import UserProgress from "@/components/UserProgress";
-import { getUserProgress } from "@/db/queries";
+import { getUserProgress, getUserSubscription } from "@/db/queries";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import Items from "./_components/Items";
 
 export default async function ShopPage() {
   const userProgressData = await getUserProgress();
+  const userSubscriptionData = await getUserSubscription();
 
-  const [] = await Promise.all([userProgressData]);
+  const [userProgress, userSubscription] = await Promise.all([
+    userProgressData,
+    userSubscriptionData,
+  ]);
 
-  if (!userProgressData || !userProgressData.activeCourse) {
+  if (!userProgress || !userProgress.activeCourse) {
     return redirect("/courses");
   }
+
+  const isPro = !!userSubscription?.isActive;
+
   return (
     <div className="flex flex-row-reverse gap-[48px] px-6">
       <StickyWrapper>
         <UserProgress
-          activeCourse={userProgressData.activeCourse}
-          hearts={userProgressData.hearts}
-          points={userProgressData.points}
-          hasActiveSubscription={false}
+          activeCourse={userProgress.activeCourse}
+          hearts={userProgress.hearts}
+          points={userProgress.points}
+          hasActiveSubscription={isPro}
         />
       </StickyWrapper>
       <FeedWrapper>
@@ -34,9 +41,9 @@ export default async function ShopPage() {
             Spend your points on cool stuff.
           </p>
           <Items
-            hearts={userProgressData.hearts}
-            points={userProgressData.points}
-            hasActiveSubscription={false} // Add subscription check
+            hearts={userProgress.hearts}
+            points={userProgress.points}
+            hasActiveSubscription={isPro}
           />
         </div>
       </FeedWrapper>

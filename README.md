@@ -12,7 +12,22 @@ CLERK_SECRET_KEY=
 
 # Neon DB (https://neon.tech/)
 DATABASE_URL=
+
+# Stripe (https://stripe.com/)
+STRIPE_API_KEY=
+
+STRIPE_WEBHOOK_SECRET=
 ```
+
+Para obtener el `STRIPE_WEBHOOK_SECRET` y realizar pruebas con stripe en el entorno local visitar (https://dashboard.stripe.com/test/webhooks)[https://dashboard.stripe.com/test/webhooks].
+
+```bash
+stripe login
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+stripe trigger payment_intent.succeeded
+```
+
+Visit (Settings Billing Customer Portal)[https://dashboard.stripe.com/settings/billing/portal] and click to "Activate test link" to test your customer portal.
 
 3. Metiendo algunos datos a la BD, subiendo cambios y visualizando.
 
