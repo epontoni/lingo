@@ -8,21 +8,27 @@ import {
   getLessonPercentage,
   getUnits,
   getUserProgress,
+  getUserSubscription,
 } from "@/db/queries";
 import Unit from "./_components/Unit";
+import Promo from "@/components/Promo";
+import { is } from "drizzle-orm";
+import Quests from "@/components/Quests";
 
 export default async function LearnPage() {
   const userProgressData = getUserProgress();
   const courseProgressData = getCourseProgress();
   const lessonPercentageData = getLessonPercentage();
+  const userSubscriptionData = getUserSubscription();
   const unitsData = getUnits();
 
-  const [userProgress, units, courseProgress, lessonPercent] =
+  const [userProgress, units, courseProgress, lessonPercent, userSubscription] =
     await Promise.all([
       userProgressData,
       unitsData,
       courseProgressData,
       lessonPercentageData,
+      userSubscriptionData,
     ]);
 
   if (!userProgress || !userProgress.activeCourse) {
@@ -33,6 +39,8 @@ export default async function LearnPage() {
     redirect("/courses");
   }
 
+  const isPro = !!userSubscription?.isActive;
+
   return (
     <div className="flex flex-row-reverse gap-[48px] px-6">
       <StickyWrapper>
@@ -40,8 +48,10 @@ export default async function LearnPage() {
           activeCourse={userProgress.activeCourse}
           hearts={userProgress.hearts}
           points={userProgress.points}
-          hasActiveSubscription={false}
+          hasActiveSubscription={!!userSubscription?.isActive}
         />
+        {!isPro && <Promo />}
+        <Quests points={userProgress.points} />
       </StickyWrapper>
       <FeedWrapper>
         <Header title={userProgress.activeCourse.title} />

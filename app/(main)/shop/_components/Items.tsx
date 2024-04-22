@@ -7,8 +7,7 @@ import Image from "next/image";
 import { startTransition, useTransition } from "react";
 import { toast } from "sonner";
 
-// TODO. Move along with the other constants into a common file
-const POINTS_TO_REFILL = 10;
+import { POINTS_TO_REFILL } from "@/constants";
 
 type Props = {
   hearts: number;

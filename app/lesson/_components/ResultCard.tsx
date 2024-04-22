@@ -1,11 +1,22 @@
+import { userSubscription } from "@/db/schema";
 import { cn } from "@/lib/utils";
+import { InfinityIcon } from "lucide-react";
 import Image from "next/image";
 
 type Props = {
   value: number;
   variant: "points" | "hearts";
+  userSubscription?:
+    | (typeof userSubscription.$inferSelect & {
+        isActive: boolean;
+      })
+    | null;
 };
-export default function ResultCard({ value, variant }: Props) {
+export default function ResultCard({
+  value,
+  variant,
+  userSubscription,
+}: Props) {
   const imageSrc = variant === "points" ? "/points.svg" : "/heart.svg";
   return (
     <div
@@ -38,7 +49,11 @@ export default function ResultCard({ value, variant }: Props) {
           width={30}
           className="mr-1.5"
         />
-        {value}
+        {!!userSubscription == false ? (
+          value
+        ) : (
+          <InfinityIcon className="h-6 w-6 stroke-[3] shrink-0" />
+        )}
       </div>
     </div>
   );

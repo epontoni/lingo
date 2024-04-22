@@ -1,6 +1,6 @@
 "use client";
 
-import { challengeOptions, challenges } from "@/db/schema";
+import { challengeOptions, challenges, userSubscription } from "@/db/schema";
 import { useState, useTransition } from "react";
 import Confetti from "react-confetti";
 import Header from "./Header";
@@ -25,7 +25,11 @@ type Props = {
   })[];
   initialHearts: number;
   initialPercentage: number;
-  userSubscription: any; // TODO: Replace with subscription DB type
+  userSubscription:
+    | (typeof userSubscription.$inferSelect & {
+        isActive: boolean;
+      })
+    | null;
 };
 
 export default function Quiz({
@@ -87,7 +91,7 @@ export default function Quiz({
   };
 
   const onContinue = () => {
-    if (!selectedOption) return;
+    if (!selectedOption || isPending) return; // Prevent double click (check if || isPending works)
 
     if (status === "wrong") {
       setStatus("none");
@@ -105,6 +109,7 @@ export default function Quiz({
     const correctOption = options.find((option) => option.correct);
 
     if (!correctOption) return;
+
     if (correctOption.id == selectedOption) {
       startTransition(() => {
         upsertChallengeProgress(challenge.id)
@@ -186,7 +191,11 @@ export default function Quiz({
           </h1>
           <div className="flex items-center gap-x-4 w-full">
             <ResultCard variant="points" value={challenges.length * 10} />
-            <ResultCard variant="hearts" value={hearts} />
+            <ResultCard
+              variant="hearts"
+              value={hearts}
+              userSubscription={userSubscription}
+            />
           </div>
         </div>
         <Footer
@@ -233,7 +242,11 @@ export default function Quiz({
           </div>
         </div>
       </div>
-      <Footer disabled={!selectedOption} status={status} onCheck={onContinue} />
+      <Footer
+        disabled={!selectedOption || isPending} // Prevent double click, check if isPending works
+        status={status}
+        onCheck={onContinue}
+      />
     </>
   );
 }
